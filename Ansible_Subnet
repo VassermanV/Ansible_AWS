@@ -1,0 +1,18 @@
+- name: create a subnet
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+   - name: create a subnet
+     ec2_vpc_subnet:
+      state: present      
+      region: us-east-1                    # required region for subnet
+      vpc_id: vpc-XXXXXXXXXXXXXXXXX        # to which VPC you want to attach your subnet
+      aws_access_key: XXXXXXXXXXXXXXXXX    # IAM user with sufficient permissions
+      aws_secret_key: XXXXXXXXXXXXXXXXX
+      cidr: 192.168.0/24                   # your subnet CIDR 
+      tags:
+        name: ansible_subnet
+    
+    register: ansible_subnet               # If this task is part of a bigger task - register a variable to use further
