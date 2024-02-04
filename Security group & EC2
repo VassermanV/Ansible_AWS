@@ -1,0 +1,48 @@
+---
+- name: Provision an EC2 Instance
+  hosts: localhost                             #  means that you working from your local machine
+  connection: local
+  gather_facts: False
+  vars: 
+    ipaddress: 192.168.0.1                     # desired IP address for your EC2
+      
+  
+  tasks:
+
+  - name: create security group
+    ec2_group:
+      name: ansible__sec_group                # name for your future SG
+      description: ec2 create example
+      region: eu-west-1
+      vpc_id: vpc-XXXXXXXXXXXXXXXXX           # Put here your VPC, from AWS environment 
+      aws_access_key: XXXXXXXXXXXXXXXXX       # from IAM put your access key with ec2full access permissions 
+      aws_secret_key: XXXXXXXXXXXXXXXXX       # from IAM put your secret access key with ec2full access permissions
+      rules:                                  # in this section you allow communication ports 
+        - proto: tcp                          # allowed protocols (could be tcp/udp/icmp/icmp6) 
+          ports:
+            - 22
+            - 443
+          cidr_ip: 0.0.0.0/24                 # required CIDR, for test purposes, I opened access for all IPs
+    
+    register: sec_gr_result                   # assign an output of this section to a variable to use in further steps
+  - pause:
+      seconds: 10                             # short pause for SG creation
+
+  - name: create EC2
+    ec2:
+      key_name: lsf-burst-ec2                 # This is .ppk key, which is stored in AWS and used for connection to EC2 
+      instance_type: t2.small                 # selected desired instant type
+      image: ami-XXXXXXXXXXXXXXXXX            # Each machine Image has a unique ID, so copy and paste it here (or create your own) 
+      region: eu-west-1                       # desired operation region
+      assign_public_ip: no                    # if you have a web app and it should be accessible on the internet 
+      count: 1                                # desired quantity of EC2 instances
+      volumes:                                # If the default disk size is not appropriate, you can change it here       
+      - device_name: /dev/sda1                # This is a default (root) partition 
+        volume_type: gp2                      # disk type
+        volume_size: 15                       # desirable disk size (in Gb) 
+        delete_on_termination: true           # volume behaviour after EC2 termination
+      private_ip: "{{ipaddress}}"             # This is a variable with an IP address, mentioned above 
+      group_id: "{{sec_gr_result.group_id}}"  # previously created SG, I`m working with variables so the correct syntax is variablename.module
+      vpc_subnet_id: subnet-XXXXXXXXXXXXX     # subnet from your environment 
+      aws_access_key: XXXXXXXXXXXXXXXXX       # the same key with permissions
+      aws_secret_key: XXXXXXXXXXXXXXXXX
