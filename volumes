@@ -1,0 +1,18 @@
+- name: create new volume & attach to instance
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+   - name: create volume                  
+     ec2_vol:                              # use this module to work with Volumes
+      name: ansible__volume                # name for your future volume
+      zone: eu-west-1a                     # operational zone
+      region: eu-west-1                    # region (usually you have 3 regions in one zone)
+      volume_size: "{{20}}"                # desired volume size
+      volume_type: gp2                     # disk type
+      delete_on_termination: true 
+      aws_access_key: XXXXXXXXXXXXXXXXX    # user with sufficient permissions 
+      aws_secret_key: XXXXXXXXXXXXXXXXX    # user with sufficient permissions
+      
+     register: volume_name                 # if this section is part of a bigger task - output will be written to a variable for the further use
