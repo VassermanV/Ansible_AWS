@@ -6,11 +6,11 @@
   tasks:
     - name: vpc subnet info
       ec2_vpc_subnet_info:
-        region: eu-west-1
-        aws_access_key: XXXXXXXXXXXXXXXXX
-        aws_secret_key: XXXXXXXXXXXXXXXXX 
+        region: eu-west-1                    # region, where located VPC
+        aws_access_key: XXXXXXXXXXXXXXXXX    # user with sufficient permissions 
+        aws_secret_key: XXXXXXXXXXXXXXXXX    
         filters: 
-          vpc-id: vpc-XXXXXXXXXXXXXXXXX
-      register: result
+          vpc-id: vpc-XXXXXXXXXXXXXXXXX      # desired VPC to list subnets
+      register: result                       # register variable with output
     
-    - debug: msg="{{ result }}"
+    - debug: msg="{{ result }}"              # debug a variable to see an output 
