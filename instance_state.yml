@@ -1,0 +1,17 @@
+- name: Instance state 
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: vpc subnet info
+      ec2_instance_info:
+        region: eu-west-1
+        aws_access_key: XXXXXXXXXXXXXXXXX
+        aws_secret_key: XXXXXXXXXXXXXXXXX 
+        filters: 
+          instance-state-name: ["running"]
+
+      register: result
+    
+    - debug: msg="{{ result }}"
