@@ -1,0 +1,19 @@
+- name: create new volume & attach to instance
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+
+
+  tasks:
+    - name: security group status
+      ec2_group_info:
+        region: eu-west-1                        # desired region, where you want to see detailed information regarding SG
+        aws_access_key: XXXXXXXXXXXXXXXXXX       # credentials to connect to AWS
+        aws_secret_key: XXXXXXXXXXXXXXXXXX
+        filters:
+          vpc-id: vpc-XXXXXXXXXXXXXXXXXX         # if you want to be more specific and search detailed information in specific VPC 
+          group-id: sg-XXXXXXXXXXXXXXXXX         # if you want to see all open ports/destinations in specific VPC
+      register: result                           # send output to the variable
+    
+    - debug: msg="{{ result.security_groups }}"  # debug output from the variable to see in the human-readable state
