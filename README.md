@@ -6,4 +6,5 @@ A branch for EC2 deployment with different parameters
 - volumes.yml - playbook to create independent volume (not attached to any EC2) with variable, for further use.
 - status_security_group.yml -  playbook to see detailed information regarding all existing SG in specified VPC (by adding vpc-id parameter) or detailed information, regarding specific SG, by adding group-id parameter.
 - vpc_subnet_info.yml - playbook to see detailed information regarding all existing subnets in specified VPC (by adding vpc-id parameter).
-- check_stop_ec2.yml - playbook to see an instance in the running state, enter its ID to variable and shut down by defining instance id in variable. 
+- check_stop_ec2.yml - playbook to see an instance in the running state, enter its ID to a variable, and shut down by defining instance id in the variable.
+- check_installed_pck.yml - some basic pre-check does packages are installed on running Instance or not
