@@ -1,0 +1,21 @@
+- name: Instance state 
+  hosts: xxx.xxx.xxx.xxx                      # if you working with an already defined instance
+  connection: local
+  gather_facts: false
+
+
+  tasks:
+    - name: check packages
+      package_facts:
+        manager: auto
+   
+
+    - name: print
+      debug: 
+        msg: "NetworkManager version is {{ ansible_facts.packages['NetworkManager'][0]['version'] }}"  # ansible_facts.packages - this module will show all installed packages (in my case I`m checking network manager)
+      when: "'NetworkManager' in ansible_facts.packages"                                               # if Net Manager is present in packages the above line returns me a version
+    
+    - name: print not
+      debug: 
+        msg: "NetworkManager not installed"
+      when: "'NetworkManager' not in ansible_facts.packages"                                            # the above line returns when Net Mngr isn't installed                         
