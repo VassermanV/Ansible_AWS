@@ -1,0 +1,27 @@
+- name: Instance state 
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: check running instances
+      ec2_instance_info:                                      # Use this module to gather information regarding existing instances
+        region: eu-west-1                                     # operational region 
+        aws_access_key: XXXXXXXXXXXXXXXX                      # user with sufficient permissions 
+        aws_secret_key: XXXXXXXXXXXXXXXX 
+        filters:                                              # we are using this parameter to be more specific 
+          instance-state-name: ["running"]                    # show instances in the running state
+          vpc-id: vpc-XXXXXXXXXXXXXXXX                        # instances from specific VPC
+      register: result                                        # save the output to the variable - result
+        
+    
+    - debug: msg="{{ result.instances[0].instance_id }}"      # the attribute result is a list. To get instance_id from the instances I`m extracting an instance_id (not necessary on this step) 
+      
+        
+    - name: Stop running Instance
+      ec2: 
+        instance_ids: "{{result.instances[0].instance_id}}"   # I`m continuing to work with output, where instance state is running
+        region: eu-west-1                                     
+        aws_access_key: XXXXXXXXXXXXXXXX
+        aws_secret_key: XXXXXXXXXXXXXXXX 
+        state: stopped                                         # by defining state 'stopped' I`m shutting down the instance 
