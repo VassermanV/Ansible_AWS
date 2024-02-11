@@ -1,0 +1,27 @@
+- name: Terminate stopped instances 
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Check stopped instances
+      ec2_instance_info:
+        region: eu-west-1
+        aws_access_key: XXXXXXXXXXXXXXXXXXXX
+        aws_secret_key: XXXXXXXXXXXXXXXXXXXX
+        filters: 
+          instance-state-name: ["stopped"]                        # will check all instances in the stopped state in the below-defined VPC
+          vpc-id: vpc-XXXXXXXXXXXXXXXXXXXX
+      register: result                                            # register output to the variable
+        
+    
+    - debug: msg="{{ result.instances[0].instance_id }}"          # will show you instances name 
+      
+        
+    - name: Terminate Instance
+      ec2: 
+        instance_ids: "{{result.instances[0].instance_id}}"
+        region: eu-west-1
+        aws_access_key: XXXXXXXXXXXXXXXXXXXX
+        aws_secret_key: XXXXXXXXXXXXXXXXXXXX 
+        state: absent                                             # terminate stopped instances
