@@ -1,0 +1,15 @@
+- name: create VPC 
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: create VPC
+      ec2_vpc_net:
+        name: ansible_vpc                      - name for your VPC
+        cidr_block: 10.0.0.0/16                - desired CIDR
+        region: eu-west-1                      - a region where deploy VPC
+        tenancy: default                       - desired tenancy: default or dedicated
+        aws_access_key: XXXXXXXXXXXXXXXXXXXX   - user with a sufficient permissions
+        aws_secret_key: XXXXXXXXXXXXXXXXXXXX
+      register: vpc                            - register a variable for further use 
