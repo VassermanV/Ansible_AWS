@@ -1,0 +1,14 @@
+- name: Terminate stopped instances 
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Check stopped instances
+      amazon.aws.ec2_vpc_subnet_info:                  - use this module to see detailed info regarding your vpc/subnets
+        region: eu-west-1      
+        aws_access_key: XXXXXXXXXXXXXXXXXXXX
+        aws_secret_key: XXXXXXXXXXXXXXXXXXXX
+      register: vpc_info
+  
+    - debug: msg="{{ vpc_info.subnets[0].vpc_id }}"  - show only vpc id instead of a long data list 
