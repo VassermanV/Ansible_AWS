@@ -8,3 +8,4 @@ A branch for EC2 deployment with different parameters
 - vpc_subnet_info.yml - playbook to see detailed information regarding all existing subnets in specified VPC (by adding vpc-id parameter).
 - check_stop_ec2.yml - playbook to see an instance in the running state, enter its ID to a variable, and shut down by defining instance id in the variable.
 - check_installed_pck.yml - some basic pre-check does packages are installed on running Instance or not
+- vpc_create.yml - deploy a new VPC with specified CIDR 
