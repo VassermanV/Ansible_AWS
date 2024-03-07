@@ -1,0 +1,80 @@
+- name: create VPC 
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: create VPC                                  # in this section creating a VPC
+      ec2_vpc_net:
+        name: ansible_vpc
+        cidr_block: 10.0.0.0/16
+        region: eu-west-1
+        tenancy: default
+        aws_access_key: XXXXXXXXXXXXXXXXXXXXXXX
+        aws_secret_key: XXXXXXXXXXXXXXXXXXXXXXX
+        state: present
+      register: vpc_ansible
+
+
+    - name: Check all VPC`s
+      ec2_vpc_net_info:
+        region: eu-west-1
+        aws_access_key: XXXXXXXXXXXXXXXXXXXXXXX
+        aws_secret_key: XXXXXXXXXXXXXXXXXXXXXXX
+      register: vpc_info
+  
+    - debug: msg="{{ vpc_info.vpcs[0].vpc_id }}"     
+      register: vpc_result
+    
+    - name: create a private subnet
+      ec2_vpc_subnet:
+        state: present      
+        region: eu-west-1
+        vpc_id: "{{ vpc_info.vpcs[0].vpc_id }}"          # create a private subnet in CIDR, previously defined in VPC
+        aws_access_key: XXXXXXXXXXXXXXXXXXXXXXX
+        aws_secret_key: XXXXXXXXXXXXXXXXXXXXXXX
+        cidr: 10.0.0.0/24
+        #tags:
+          #name: ansible_private_subnet
+    
+      register: ansible_private_subnet
+
+    - name: create a public subnet                        # create a public subnet in CIDR, previously defined in VPC
+      ec2_vpc_subnet:
+        state: present      
+        region: eu-west-1
+        vpc_id: "{{ vpc_info.vpcs[0].vpc_id }}"
+        aws_access_key: XXXXXXXXXXXXXXXXXXXXXXX
+        aws_secret_key: XXXXXXXXXXXXXXXXXXXXXXX
+        cidr: 10.0.1.0/24                                 # creating a small public subnet inside VPC CIDR
+        #tags:
+          #name: ansible_private_subnet
+    
+      register: ansible_public_subnet
+
+    - debug: msg="{{ ansible_public_subnet.subnet.id }}"
+    
+    - debug: msg="{{ vpc_info.vpcs[0].vpc_id }}"
+
+
+    - name: create internet gateway                          # create an internet gateway 
+      ec2_vpc_igw:
+        region: eu-west-1
+        vpc_id: "{{ vpc_info.vpcs[0].vpc_id }}"
+        aws_access_key: XXXXXXXXXXXXXXXXXXXXXXX
+        aws_secret_key: XXXXXXXXXXXXXXXXXXXXXXX
+      register: igw
+    
+    - debug: msg="{{igw.gateway_id}}"
+
+    - name: create a new route table                      # create a route in public subnet n internet gateway 
+      ec2_vpc_route_table:
+        region: eu-west-1
+        vpc_id: "{{ vpc_info.vpcs[0].vpc_id }}"
+        aws_access_key: XXXXXXXXXXXXXXXXXXXXXXX
+        aws_secret_key: XXXXXXXXXXXXXXXXXXXXXXX
+        subnets: 
+          - "{{ ansible_public_subnet.subnet.id }}"      # working with variable, registered during public subnet creation 
+        routes:
+          - dest: 0.0.0.0/0                              # define required CIDR 
+            gateway_id: "{{ igw.gateway_id }}"           # destination in this specific route table is IGW
